@@ -3,6 +3,7 @@ const seed = require("../db/seeds/seed.js");
 const request = require("supertest");
 const app = require("../app.js");
 const db = require("../db/connection");
+const fs = require("fs/promises");
 
 afterAll(() => {
   return db.end();
@@ -13,6 +14,16 @@ beforeEach(() => {
 });
 
 describe("/api", () => {
+  test("GET /api should respond with a list and description of all available endpoinds", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then((endPoints) => {
+        return fs.readFile("endpoints.json", "utf-8").then((data) => {
+          expect(endPoints.text).toEqual(data);
+        });
+      });
+  });
   describe("/api/topics", () => {
     test("GET /api/topics should respond with a status 200 and an array of topic objects", () => {
       return request(app)
