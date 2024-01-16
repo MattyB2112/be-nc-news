@@ -3,6 +3,7 @@ const {
   fetchEndpoints,
   fetchArticleById,
   fetchArticles,
+  fetchArticleComments,
 } = require("../models/topics.model.js");
 
 exports.getTopics = (req, res) => {
@@ -30,4 +31,11 @@ exports.getArticles = (req, res, next) => {
   fetchArticles().then((articles) => {
     res.status(200).send({ articles: articles });
   });
+};
+
+exports.getArticleComments = (req, res, next) => {
+  id = req.params.article_id;
+  fetchArticleComments(id)
+    .then((comments) => res.status(200).send(comments))
+    .catch(next);
 };
