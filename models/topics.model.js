@@ -13,4 +13,14 @@ exports.fetchEndpoints = () => {
   });
 };
 
-// endpoints.json
+exports.fetchArticleById = (id) => {
+  const paramAsNum = Number(id);
+  if (Number.isNaN(paramAsNum)) {
+    return Promise.reject({ status: 404, message: "not found" });
+  } else
+    return db
+      .query(`SELECT * FROM articles WHERE article_id=${id}`)
+      .then(({ rows }) => {
+        return rows[0];
+      });
+};
