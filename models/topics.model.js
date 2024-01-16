@@ -24,3 +24,30 @@ exports.fetchArticleById = (id) => {
         return rows[0];
       });
 };
+
+exports.fetchArticles = () => {
+  return db.query(`SELECT article_id FROM comments`).then(({ rows }) => {
+    const commentIds = rows;
+    let commentCount = [];
+    commentIds.forEach((comment) => {
+      commentCount.push(comment.article_id);
+    });
+    return db
+      .query(
+        `SELECT author, title, article_id, topic, created_at, votes, article_img_url FROM articles ORDER BY created_at DESC`
+      )
+      .then(({ rows }) => {
+        rows.forEach((row) => {
+          row.comment_count = 0;
+        });
+        rows.forEach((row) => {
+          for (let i = 0; i < commentCount.length; i++) {
+            if (row.article_id === commentCount[i]) {
+              row.comment_count++;
+            }
+          }
+        });
+        return rows;
+      });
+  });
+};
