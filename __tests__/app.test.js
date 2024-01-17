@@ -130,7 +130,7 @@ describe("/GET api/articles", () => {
   });
 });
 describe("get /api/articles/:article_id", () => {
-  test(" GET /api/articles/1 returns a status 200 and a single corresponding article", () => {
+  test("GET /api/articles/1 returns a status 200 and a single corresponding article", () => {
     return request(app)
       .get("/api/articles/1")
       .expect(200)
@@ -148,7 +148,7 @@ describe("get /api/articles/:article_id", () => {
         );
       });
   });
-  test("GET /api/articles/banana returns a 404 and 'not found' as parameter is invalid", () => {
+  test("GET /api/articles/banana returns a 400 and 'bad request' as parameter is invalid", () => {
     return request(app)
       .get("/api/articles/hello")
       .expect(400)
