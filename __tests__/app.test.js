@@ -151,13 +151,14 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/1/comments")
       .expect(200)
       .then(({ body }) => {
+        expect(body.length).toBe(11);
         body.forEach((comment) => {
-          expect(comment.hasOwnProperty("comment_id")).toBe(true);
-          expect(comment.hasOwnProperty("votes")).toBe(true);
-          expect(comment.hasOwnProperty("created_at")).toBe(true);
-          expect(comment.hasOwnProperty("author")).toBe(true);
-          expect(comment.hasOwnProperty("body")).toBe(true);
-          expect(comment.hasOwnProperty("article_id")).toBe(true);
+          expect(typeof comment.comment_id).toBe("number");
+          expect(typeof comment.votes).toBe("number");
+          expect(typeof comment.created_at).toBe("string");
+          expect(typeof comment.author).toBe("string");
+          expect(typeof comment.body).toBe("string");
+          expect(typeof comment.article_id).toBe("number");
         });
       });
   });
@@ -180,6 +181,14 @@ describe("GET /api/articles/:article_id/comments", () => {
   test("valid but non existent article id sends 404 error and message", () => {
     return request(app)
       .get("/api/articles/99999/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("not found");
+      });
+  });
+  test("article with no comments returns a 404 and not found message", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
       .expect(404)
       .then(({ body }) => {
         expect(body.message).toBe("not found");
