@@ -1,10 +1,10 @@
 const {
   fetchTopics,
-  fetchEndpoints,
   fetchArticleById,
   fetchArticles,
   fetchArticleComments,
 } = require("../models/topics.model.js");
+const endPoints = require("../endpoints.json");
 
 exports.getTopics = (req, res) => {
   fetchTopics().then((topics) => {
@@ -13,9 +13,7 @@ exports.getTopics = (req, res) => {
 };
 
 exports.getEndpoints = (req, res) => {
-  fetchEndpoints().then((endpoints) => {
-    res.status(200).send(endpoints);
-  });
+  res.status(200).send(endPoints);
 };
 
 exports.getArticleById = (req, res, next) => {

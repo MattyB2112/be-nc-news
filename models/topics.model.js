@@ -7,12 +7,6 @@ exports.fetchTopics = () => {
   });
 };
 
-exports.fetchEndpoints = () => {
-  return fs.readFile("endpoints.json", "utf-8").then((data) => {
-    return data;
-  });
-};
-
 exports.fetchArticleById = (id) => {
   const paramAsNum = Number(id);
   if (Number.isNaN(paramAsNum)) {
