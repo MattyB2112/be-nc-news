@@ -4,6 +4,7 @@ const request = require("supertest");
 const app = require("../app.js");
 const db = require("../db/connection");
 const fs = require("fs/promises");
+const endPointsFile = require("../endpoints.json");
 
 afterAll(() => {
   return db.end();
@@ -19,9 +20,9 @@ describe("/api", () => {
       .get("/api")
       .expect(200)
       .then((endPoints) => {
-        return fs.readFile("endpoints.json", "utf-8").then((data) => {
-          expect(endPoints.text).toEqual(data);
-        });
+        const parsedEndpoints = JSON.parse(endPoints.text);
+        console.log(parsedEndpoints);
+        expect(parsedEndpoints).toEqual(endPointsFile);
       });
   });
 });
