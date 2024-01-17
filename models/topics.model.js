@@ -8,18 +8,14 @@ exports.fetchTopics = () => {
 };
 
 exports.fetchArticleById = (id) => {
-  const paramAsNum = Number(id);
-  if (Number.isNaN(paramAsNum)) {
-    return Promise.reject({ status: 400, message: "bad request" });
-  } else
-    return db
-      .query(`SELECT * FROM articles WHERE article_id = ${paramAsNum}`)
-      .then(({ rows }) => {
-        if (rows.length === 0) {
-          return Promise.reject({ status: 404, message: "not found" });
-        }
-        return rows;
-      });
+  return db
+    .query(`SELECT * FROM articles WHERE article_id = ${id}`)
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, message: "not found" });
+      }
+      return rows;
+    });
 };
 
 exports.fetchArticles = () => {
