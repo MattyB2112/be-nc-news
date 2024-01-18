@@ -3,6 +3,7 @@ const {
   fetchArticleById,
   fetchArticles,
   fetchArticleComments,
+  addArticleComment,
 } = require("../models/topics.model.js");
 const endPoints = require("../endpoints.json");
 
@@ -35,5 +36,16 @@ exports.getArticleComments = (req, res, next) => {
   id = req.params.article_id;
   fetchArticleComments(id)
     .then((comments) => res.status(200).send(comments))
+    .catch(next);
+};
+
+exports.postArticleComment = (req, res, next) => {
+  const comment = req.body;
+
+  const { article_id } = req.params;
+  addArticleComment(comment, article_id)
+    .then((comment) => {
+      res.status(201).send({ comment });
+    })
     .catch(next);
 };
