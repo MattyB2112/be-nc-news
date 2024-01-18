@@ -30,9 +30,12 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  fetchArticles().then((articles) => {
-    res.status(200).send({ articles: articles });
-  });
+  const { topic } = req.query;
+  fetchArticles(topic)
+    .then((articles) => {
+      res.status(200).send({ articles: articles });
+    })
+    .catch(next);
 };
 
 exports.getArticleComments = (req, res, next) => {
@@ -56,10 +59,9 @@ exports.postArticleComment = (req, res, next) => {
 exports.changeProperty = (req, res, next) => {
   const { inc_votes } = req.body;
   const { article_id } = req.params;
-
   updateProperty(inc_votes, article_id)
     .then((article) => {
-      res.status(202).send({ article });
+      res.status(200).send({ article });
     })
     .catch(next);
 };

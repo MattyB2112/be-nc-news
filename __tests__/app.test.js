@@ -279,7 +279,7 @@ describe("PATCH /api/articles/:article_id", () => {
     return request(app)
       .patch("/api/articles/1")
       .send(propToUpdate)
-      .expect(202)
+      .expect(200)
       .then(({ body }) => {
         const article = body.article;
         expect(typeof article).toBe("object");
@@ -290,7 +290,7 @@ describe("PATCH /api/articles/:article_id", () => {
     return request(app)
       .patch("/api/articles/1")
       .send(propToUpdate)
-      .expect(202)
+      .expect(200)
       .then(({ body }) => {
         const article = body.article;
         expect(typeof article.article_id).toBe("number");
@@ -308,7 +308,7 @@ describe("PATCH /api/articles/:article_id", () => {
     return request(app)
       .patch("/api/articles/1")
       .send(propToUpdate)
-      .expect(202)
+      .expect(200)
       .then(({ body }) => {
         const article = body.article;
         expect(article.votes).toBe(150);
@@ -332,6 +332,16 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.message).toBe("not found");
+      });
+  });
+  test("invalid article path returns status 400 and error message", () => {
+    const propToUpdate = { inc_votes: 100 };
+    return request(app)
+      .patch("/api/articles/banana")
+      .send(propToUpdate)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("bad request");
       });
   });
 });
@@ -388,6 +398,43 @@ describe("GET /api/users", () => {
           expect(user.hasOwnProperty("name")).toBe(true);
           expect(user.hasOwnProperty("avatar_url")).toBe(true);
         });
+      });
+  });
+});
+describe("GET /api/articles by query", () => {
+  test("returns all articles with specified topic", () => {
+    return request(app)
+      .get("/api/articles/?topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        console.log(articles);
+        expect(articles.length).toBe(1);
+        expect(typeof articles[0].author).toBe("string");
+        expect(typeof articles[0].title).toBe("string");
+        expect(typeof articles[0].article_id).toBe("number");
+        expect(typeof articles[0].topic).toBe("string");
+        expect(typeof articles[0].created_at).toBe("string");
+        expect(typeof articles[0].votes).toBe("number");
+        expect(typeof articles[0].article_img_url).toBe("string");
+        expect(typeof articles[0].comment_count).toBe("string");
+      });
+  });
+  test("returns all articles if passed no query", () => {
+    return request(app)
+      .get("/api/articles/?topic=")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles.length).toBe(13);
+      });
+  });
+  test("non-existent query returns status 404 and error message", () => {
+    return request(app)
+      .get("/api/articles/?topic=youguessedit-bananas")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("not found");
       });
   });
 });
