@@ -335,3 +335,44 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+describe("DELETE /api/comments/:comment_id", () => {
+  test.only("returns an object", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(200)
+      .then(({ body }) => {
+        const comment = body.comment;
+        expect(typeof comment).toBe("object");
+      });
+  });
+  test("returns deleted comment", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(200)
+      .then(({ body }) => {
+        const comment = body.comment;
+        expect(typeof comment.comment_id).toBe("number");
+        expect(typeof comment.body).toBe("string");
+        expect(typeof comment.article_id).toBe("number");
+        expect(typeof comment.author).toBe("string");
+        expect(typeof comment.votes).toBe("number");
+        expect(typeof comment.created_at).toBe("string");
+      });
+  });
+  test("valid but non-existent comment_id returns 404 and error message", () => {
+    return request(app)
+      .delete("/api/comments/99999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("not found");
+      });
+  });
+  test("invalid comment_id returns 400 and error message", () => {
+    return request(app)
+      .delete("/api/comments/banana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("bad request");
+      });
+  });
+});
