@@ -33,7 +33,7 @@ exports.getArticles = (req, res, next) => {
   const { topic } = req.query;
   fetchArticles(topic)
     .then((articles) => {
-      res.status(200).send({ articles: articles });
+      res.status(200).send({ articles });
     })
     .catch(next);
 };
@@ -77,6 +77,6 @@ exports.deleteComment = (req, res, next) => {
 
 exports.getUsers = (req, res, next) => {
   fetchUsers().then((users) => {
-    res.status(200).send(users);
+    res.status(200).send({ users });
   });
 };
