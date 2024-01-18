@@ -5,6 +5,7 @@ const {
   getArticleById,
   getArticles,
   getArticleComments,
+  postArticleComment,
 } = require("./controllers/topics.controller.js");
 const app = express();
 
@@ -20,12 +21,14 @@ app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id/comments", getArticleComments);
 
+app.post("/api/articles/:article_id/comments", postArticleComment);
+
 app.use((err, req, res, next) => {
   if (err.status && err.message) {
     res.status(err.status).send({ message: err.message });
   } else if ((err.code = "42703")) {
     res.status(400).send({ message: "bad request" });
-  }
+  } else console.log(err);
 });
 
 app.all("*", (req, res) => {

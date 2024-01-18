@@ -122,7 +122,7 @@ describe("get /api/articles/:article_id", () => {
   });
   test("GET /api/articles/banana returns a 400 and 'bad request' as parameter is invalid", () => {
     return request(app)
-      .get("/api/articles/hello")
+      .get("/api/articles/banana")
       .expect(400)
       .then(({ body }) => {
         expect(body.message).toBe("bad request");
@@ -192,6 +192,85 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.message).toBe("not found");
+      });
+  });
+});
+describe("POST /api/articles/:article_id/comments", () => {
+  test("responds with the posted comment", () => {
+    const comment = { username: "butter_bridge", body: "Hello world!" };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(comment)
+      .expect(201)
+      .then(({ body }) => {
+        const postedComment = body.comment;
+
+        expect(typeof postedComment.comment_id).toBe("number");
+        expect(typeof postedComment.body).toBe("string");
+        expect(typeof postedComment.article_id).toBe("number");
+        expect(typeof postedComment.author).toBe("string");
+        expect(typeof postedComment.votes).toBe("number");
+        expect(typeof postedComment.created_at).toBe("string");
+      });
+  });
+  test("responds with status 400 and 'bad request' if username does not exist in database", () => {
+    const comment = { username: "banana", body: "Hello world!" };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("bad request");
+      });
+  });
+  test("responds with status 400 and 'bad request' if comment body is undefined", () => {
+    const comment = { username: "butter_bridge", body: undefined };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("bad request");
+      });
+  });
+  test("responds with status 400 and 'bad request' if article_id endpoint is valid but non-existent", () => {
+    const comment = { username: "butter_bridge", body: "Hello world!" };
+    return request(app)
+      .post("/api/articles/9999/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("bad request");
+      });
+  });
+  test("responds with status 400 and 'bad request' if article_id endpoint is invalid", () => {
+    const comment = { username: "butter_bridge", body: "Hello world!" };
+    return request(app)
+      .post("/api/articles/banana/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("bad request");
+      });
+  });
+  test("responds with status 404 and 'endpoint not found!' if comment endpoint is invalid", () => {
+    const comment = { username: "butter_bridge", body: "Hello world!" };
+    return request(app)
+      .post("/api/articles/1/banana")
+      .send(comment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("endpoint not found!");
+      });
+  });
+  test("responds with status 404 and 'endpoint not found!' if articles is missppelled in endpoint", () => {
+    const comment = { username: "butter_bridge", body: "Hello world!" };
+    return request(app)
+      .post("/api/banana/1/comments")
+      .send(comment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("endpoint not found!");
       });
   });
 });
