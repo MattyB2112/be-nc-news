@@ -118,7 +118,6 @@ describe("get /api/articles/:article_id", () => {
         expect(article.article_img_url).toBe(
           "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         );
-        expect(article.comment_count).toBe("11");
       });
   });
   test("GET /api/articles/banana returns a 400 and 'bad request' as parameter is invalid", () => {
@@ -187,12 +186,12 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(body.message).toBe("not found");
       });
   });
-  test("article with no comments returns a 404 and not found message", () => {
+  test("article with no comments returns a 200 and empty array", () => {
     return request(app)
       .get("/api/articles/2/comments")
-      .expect(404)
+      .expect(200)
       .then(({ body }) => {
-        expect(body.message).toBe("not found");
+        expect(body.length).toBe(0);
       });
   });
 });
@@ -218,9 +217,9 @@ describe("POST /api/articles/:article_id/comments", () => {
     return request(app)
       .post("/api/articles/1/comments")
       .send(comment)
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe("bad request");
+        expect(body.message).toBe("username not found");
       });
   });
   test("responds with status 400 and 'bad request' if comment body is undefined", () => {
@@ -238,29 +237,9 @@ describe("POST /api/articles/:article_id/comments", () => {
     return request(app)
       .post("/api/articles/9999/comments")
       .send(comment)
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.message).toBe("bad request");
-      });
-  });
-  test("responds with status 400 and 'bad request' if article_id endpoint is invalid", () => {
-    const comment = { username: "butter_bridge", body: "Hello world!" };
-    return request(app)
-      .post("/api/articles/banana/comments")
-      .send(comment)
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.message).toBe("bad request");
-      });
-  });
-  test("responds with status 404 and 'endpoint not found!' if comment endpoint is invalid", () => {
-    const comment = { username: "butter_bridge", body: "Hello world!" };
-    return request(app)
-      .post("/api/articles/1/banana")
-      .send(comment)
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe("endpoint not found!");
+        expect(body.message).toBe("article not found");
       });
   });
   test("responds with status 404 and 'endpoint not found!' if articles is missppelled in endpoint", () => {
@@ -347,15 +326,6 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 describe("DELETE /api/comments/:comment_id", () => {
-  test("returns an object", () => {
-    return request(app)
-      .delete("/api/comments/1")
-      .expect(200)
-      .then(({ body }) => {
-        const comment = body.comment;
-        expect(typeof comment).toBe("object");
-      });
-  });
   test("returns deleted comment", () => {
     return request(app)
       .delete("/api/comments/1")
@@ -393,8 +363,9 @@ describe("GET /api/users", () => {
       .get("/api/users/")
       .expect(200)
       .then(({ body }) => {
-        expect(body.length).toBe(4);
-        body.forEach((user) => {
+        const users = body.users;
+        expect(users.length).toBe(4);
+        users.forEach((user) => {
           expect(user.hasOwnProperty("username")).toBe(true);
           expect(user.hasOwnProperty("name")).toBe(true);
           expect(user.hasOwnProperty("avatar_url")).toBe(true);
@@ -413,7 +384,7 @@ describe("GET /api/articles by query", () => {
         expect(typeof articles[0].author).toBe("string");
         expect(typeof articles[0].title).toBe("string");
         expect(typeof articles[0].article_id).toBe("number");
-        expect(typeof articles[0].topic).toBe("string");
+        expect(articles[0].topic).toBe("cats");
         expect(typeof articles[0].created_at).toBe("string");
         expect(typeof articles[0].votes).toBe("number");
         expect(typeof articles[0].article_img_url).toBe("string");
@@ -429,12 +400,33 @@ describe("GET /api/articles by query", () => {
         expect(articles.length).toBe(13);
       });
   });
-  test("non-existent query returns status 404 and error message", () => {
+  test("valid topic with no articles returns empty array", () => {
+    return request(app)
+      .get("/api/articles/?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+
+        expect(articles.length).toBe(0);
+      });
+  });
+  test("invalid query returns status 400 and error message", () => {
     return request(app)
       .get("/api/articles/?topic=youguessedit-bananas")
-      .expect(404)
+      .expect(400)
       .then(({ body }) => {
-        expect(body.message).toBe("not found");
+        expect(body.message).toBe("bad request");
+      });
+  });
+});
+describe("Adding new feature to GET /api/articles/:article_id", () => {
+  test("adds comment_count property to returned article", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article[0];
+        expect(article.comment_count).toBe("11");
       });
   });
 });
