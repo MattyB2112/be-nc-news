@@ -4,6 +4,7 @@ const {
   fetchArticles,
   fetchArticleComments,
   addArticleComment,
+  updateProperty,
 } = require("../models/topics.model.js");
 const endPoints = require("../endpoints.json");
 
@@ -46,6 +47,17 @@ exports.postArticleComment = (req, res, next) => {
   addArticleComment(comment, article_id)
     .then((comment) => {
       res.status(201).send({ comment });
+    })
+    .catch(next);
+};
+
+exports.changeProperty = (req, res, next) => {
+  const { inc_votes } = req.body;
+  const { article_id } = req.params;
+
+  updateProperty(inc_votes, article_id)
+    .then((article) => {
+      res.status(202).send({ article });
     })
     .catch(next);
 };

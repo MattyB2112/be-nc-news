@@ -6,6 +6,7 @@ const {
   getArticles,
   getArticleComments,
   postArticleComment,
+  changeProperty,
 } = require("./controllers/topics.controller.js");
 const app = express();
 
@@ -22,6 +23,8 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id/comments", getArticleComments);
 
 app.post("/api/articles/:article_id/comments", postArticleComment);
+
+app.patch("/api/articles/:article_id", changeProperty);
 
 app.use((err, req, res, next) => {
   if (err.status && err.message) {
