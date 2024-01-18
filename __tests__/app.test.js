@@ -204,7 +204,6 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(201)
       .then(({ body }) => {
         const postedComment = body.comment;
-
         expect(typeof postedComment.comment_id).toBe("number");
         expect(typeof postedComment.body).toBe("string");
         expect(typeof postedComment.article_id).toBe("number");
@@ -271,6 +270,68 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.message).toBe("endpoint not found!");
+      });
+  });
+});
+describe("PATCH /api/articles/:article_id", () => {
+  test("returns an object", () => {
+    const propToUpdate = { inc_votes: 50 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(propToUpdate)
+      .expect(202)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(typeof article).toBe("object");
+      });
+  });
+  test("returns the article desired", () => {
+    const propToUpdate = { inc_votes: 50 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(propToUpdate)
+      .expect(202)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(typeof article.article_id).toBe("number");
+        expect(typeof article.title).toBe("string");
+        expect(typeof article.topic).toBe("string");
+        expect(typeof article.author).toBe("string");
+        expect(typeof article.body).toBe("string");
+        expect(typeof article.created_at).toBe("string");
+        expect(typeof article.votes).toBe("number");
+        expect(typeof article.article_img_url).toBe("string");
+      });
+  });
+  test("updates object property by desired amount", () => {
+    const propToUpdate = { inc_votes: 50 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(propToUpdate)
+      .expect(202)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article.votes).toBe(150);
+      });
+  });
+  test("invalid form of object passed in returns status 400 and error message", () => {
+    const propToUpdate = { inc_votes: "banana" };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(propToUpdate)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("bad request");
+      });
+  });
+  test("valid but non-existent article_id returns status 404 and error message", () => {
+    const propToUpdate = { inc_votes: 100 };
+    return request(app)
+      .patch("/api/articles/99999")
+      .send(propToUpdate)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("not found");
       });
   });
 });
