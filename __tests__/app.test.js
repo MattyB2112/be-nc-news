@@ -118,6 +118,7 @@ describe("get /api/articles/:article_id", () => {
         expect(article.article_img_url).toBe(
           "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         );
+        expect(article.comment_count).toBe("11");
       });
   });
   test("GET /api/articles/banana returns a 400 and 'bad request' as parameter is invalid", () => {
@@ -408,7 +409,6 @@ describe("GET /api/articles by query", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        console.log(articles);
         expect(articles.length).toBe(1);
         expect(typeof articles[0].author).toBe("string");
         expect(typeof articles[0].title).toBe("string");
