@@ -6,6 +6,7 @@ const {
   addArticleComment,
   updateProperty,
   removeComment,
+  fetchUsers,
 } = require("../models/topics.model.js");
 const endPoints = require("../endpoints.json");
 
@@ -70,4 +71,10 @@ exports.deleteComment = (req, res, next) => {
       res.status(200).send({ comment });
     })
     .catch(next);
+};
+
+exports.getUsers = (req, res, next) => {
+  fetchUsers().then((users) => {
+    res.status(200).send(users);
+  });
 };
