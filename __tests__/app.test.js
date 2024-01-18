@@ -336,7 +336,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 describe("DELETE /api/comments/:comment_id", () => {
-  test.only("returns an object", () => {
+  test("returns an object", () => {
     return request(app)
       .delete("/api/comments/1")
       .expect(200)
@@ -373,6 +373,21 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.message).toBe("bad request");
+      });
+  });
+});
+describe("GET /api/users", () => {
+  test("returns all user data", () => {
+    return request(app)
+      .get("/api/users/")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.length).toBe(4);
+        body.forEach((user) => {
+          expect(user.hasOwnProperty("username")).toBe(true);
+          expect(user.hasOwnProperty("name")).toBe(true);
+          expect(user.hasOwnProperty("avatar_url")).toBe(true);
+        });
       });
   });
 });

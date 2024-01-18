@@ -8,6 +8,7 @@ const {
   postArticleComment,
   changeProperty,
   deleteComment,
+  getUsers,
 } = require("./controllers/topics.controller.js");
 const app = express();
 
@@ -28,6 +29,8 @@ app.post("/api/articles/:article_id/comments", postArticleComment);
 app.patch("/api/articles/:article_id", changeProperty);
 
 app.delete("/api/comments/:comment_id", deleteComment);
+
+app.get("/api/users", getUsers);
 
 app.use((err, req, res, next) => {
   if (err.status && err.message) {
