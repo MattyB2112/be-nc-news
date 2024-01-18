@@ -5,6 +5,7 @@ const {
   fetchArticleComments,
   addArticleComment,
   updateProperty,
+  removeComment,
 } = require("../models/topics.model.js");
 const endPoints = require("../endpoints.json");
 
@@ -58,6 +59,15 @@ exports.changeProperty = (req, res, next) => {
   updateProperty(inc_votes, article_id)
     .then((article) => {
       res.status(202).send({ article });
+    })
+    .catch(next);
+};
+
+exports.deleteComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  removeComment(comment_id)
+    .then((comment) => {
+      res.status(200).send({ comment });
     })
     .catch(next);
 };
