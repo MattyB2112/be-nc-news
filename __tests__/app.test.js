@@ -410,7 +410,7 @@ describe("GET /api/articles by query", () => {
         expect(articles.length).toBe(0);
       });
   });
-  test("invalid query returns status 400 and error message", () => {
+  test("invalid topic query returns status 400 and error message", () => {
     return request(app)
       .get("/api/articles/?topic=youguessedit-bananas")
       .expect(404)
@@ -427,6 +427,54 @@ describe("Adding new feature to GET /api/articles/:article_id", () => {
       .then(({ body }) => {
         const article = body.article[0];
         expect(article.comment_count).toBe("11");
+      });
+  });
+});
+describe("Adding new feature to sort GET /api/articles by query", () => {
+  test("can sort by any valid query", () => {
+    return request(app)
+      .get("/api/articles/?sort_by=votes")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSortedBy("votes");
+      });
+  });
+  test("can order by DESC if specified", () => {
+    return request(app)
+      .get("/api/articles/?sort_by=votes&order=DESC")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSortedBy("votes", { descending: true });
+      });
+  });
+  test("can use all 3 possible parameters together", () => {
+    return request(app)
+      .get("/api/articles/?topic=mitch&sort_by=votes&order=DESC")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSortedBy("votes", { descending: true });
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+  test("invalid order query returns status 400 and error message", () => {
+    return request(app)
+      .get("/api/articles/?sort_by=created_at&order=bananas")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Invalid query");
+      });
+  });
+  test("invalid sort_by query returns status 400 and error message", () => {
+    return request(app)
+      .get("/api/articles/?sort_by=bananas")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Invalid query");
       });
   });
 });
