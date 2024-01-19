@@ -413,9 +413,9 @@ describe("GET /api/articles by query", () => {
   test("invalid query returns status 400 and error message", () => {
     return request(app)
       .get("/api/articles/?topic=youguessedit-bananas")
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe("bad request");
+        expect(body.message).toBe("not found");
       });
   });
 });

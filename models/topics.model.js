@@ -27,7 +27,7 @@ exports.fetchArticles = (query) => {
       .query(`SELECT * FROM topics WHERE slug = $1`, [query])
       .then(({ rows }) => {
         if (rows.length === 0) {
-          return Promise.reject({ status: 400, message: "bad request" });
+          return Promise.reject({ status: 404, message: "not found" });
         } else
           return db
             .query(
