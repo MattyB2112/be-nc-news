@@ -73,7 +73,7 @@ exports.fetchArticleComments = (id) => {
       } else
         return db
           .query(
-            `SELECT * FROM comments WHERE article_id = ${id} ORDER BY created_at ASC`
+            `SELECT * FROM comments WHERE article_id = ${id} ORDER BY created_at DESC`
           )
           .then(({ rows }) => {
             return rows;

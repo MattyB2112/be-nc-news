@@ -167,7 +167,9 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/1/comments")
       .expect(200)
       .then(({ body }) => {
-        expect([body]).toBeSortedBy("created_at");
+        expect([body]).toBeSortedBy("created_at", {
+          descending: true,
+        });
       });
   });
   test("invalid article id sends 400 error and message", () => {
